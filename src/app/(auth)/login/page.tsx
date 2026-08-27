@@ -1,0 +1,26 @@
+import Link from "next/link";
+
+export default function LoginPage() {
+  return (
+    <main className="min-h-[100dvh] bg-[var(--color-warm)] flex items-center justify-center px-6 py-16">
+      <div className="w-full max-w-[420px] bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[var(--radius-lg)] p-8 shadow-[var(--shadow-md)]">
+        <p className="mono text-xs tracking-[0.14em] uppercase text-[var(--color-muted)]">Welcome back</p>
+        <h1 className="text-2xl font-semibold tracking-tight mt-2">Log in to BEXO</h1>
+        <form method="post" action="/api/auth/callback/credentials" className="mt-6 space-y-4">
+          <div>
+            <label htmlFor="email" className="text-sm font-medium text-[var(--color-ink)]">Email</label>
+            <input id="email" name="email" type="email" required placeholder="you@company.com" className="mt-1 w-full h-10 px-3 bg-[var(--color-surface)] border border-[var(--color-border-strong)] rounded-[var(--radius-md)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-violet)]" />
+          </div>
+          <div>
+            <label htmlFor="password" className="text-sm font-medium text-[var(--color-ink)]">Password</label>
+            <input id="password" name="password" type="password" required placeholder="••••••••" className="mt-1 w-full h-10 px-3 bg-[var(--color-surface)] border border-[var(--color-border-strong)] rounded-[var(--radius-md)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-violet)]" />
+          </div>
+          <button type="submit" className="btn-primary w-full justify-center">Log in</button>
+        </form>
+        <p className="text-sm text-center mt-6 text-[var(--color-muted)]">
+          No account? <Link href="/signup" className="text-[var(--color-violet)] font-medium">Create profile</Link>
+        </p>
+      </div>
+    </main>
+  );
+}
