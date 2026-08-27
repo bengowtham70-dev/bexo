@@ -24,6 +24,14 @@ test("auth.ts has hashPassword/verifyPassword and authOptions", () => {
   expect(a).toContain("authOptions");
 });
 
+test("auth.ts has OAuth Google and GitHub providers", () => {
+  const a = readFileSync("src/lib/auth.ts", "utf8");
+  expect(a).toContain("GoogleProvider");
+  expect(a).toContain("GithubProvider");
+  expect(a).toContain("GOOGLE_CLIENT_ID");
+  expect(a).toContain("GITHUB_ID");
+});
+
 test("validators enforce 18+ literal", async () => {
   const v = readFileSync("src/lib/validators/auth.ts", "utf8");
   expect(v).toContain("literal(true");

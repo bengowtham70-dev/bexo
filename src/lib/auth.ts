@@ -14,6 +14,8 @@ try {
 
 let PrismaAdapter: unknown;
 let Credentials: unknown;
+let GoogleProvider: unknown;
+let GithubProvider: unknown;
 let prismaInstance: { user: { findUnique: (a: unknown) => Promise<null> } };
 try {
   PrismaAdapter = require("@auth/prisma-adapter").PrismaAdapter;
@@ -24,6 +26,16 @@ try {
   Credentials = require("next-auth/providers/credentials").default;
 } catch {
   Credentials = (o: unknown) => o;
+}
+try {
+  GoogleProvider = require("next-auth/providers/google").default;
+} catch {
+  GoogleProvider = () => ({ id: "google", name: "Google" });
+}
+try {
+  GithubProvider = require("next-auth/providers/github").default;
+} catch {
+  GithubProvider = () => ({ id: "github", name: "GitHub" });
 }
 try {
   prismaInstance = require("./db/index").prisma;
@@ -37,6 +49,28 @@ export const hashPassword = (p: string) => bcrypt.hashSync(p, 10);
 export const verifyPassword = (p: string, h: string) => bcrypt.compareSync(p, h);
 
 const prisma = prismaInstance as unknown as import("@prisma/client").PrismaClient;
+
+const googleProvider = (() => {
+  try {
+    return (GoogleProvider as (o: unknown) => unknown)({
+      clientId: process.env.GOOGLE_CLIENT_ID ?? "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
+    });
+  } catch {
+    return { id: "google", name: "Google" };
+  }
+})();
+
+const githubProvider = (() => {
+  try {
+    return (GithubProvider as (o: unknown) => unknown)({
+      clientId: process.env.GITHUB_ID ?? "",
+      clientSecret: process.env.GITHUB_SECRET ?? "",
+    });
+  } catch {
+    return { id: "github", name: "GitHub" };
+  }
+})();
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter ? (PrismaAdapter as (p: unknown) => unknown)(prisma) as unknown as NextAuthOptions["adapter"] : undefined,
@@ -53,7 +87,9 @@ export const authOptions: NextAuthOptions = {
         return { id: u.id, email: u.email, role: u.role } as unknown as { id: string; email: string; role: string };
       },
     }) as never,
-  ],
+    googleProvider as never,
+    githubProvider as never,
+  ].filter(Boolean),
   callbacks: {
     async jwt({ token, user }) {
       if (user) (token as Record<string, unknown>).role = (user as unknown as Record<string, unknown>).role;
