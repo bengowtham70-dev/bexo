@@ -1,0 +1,76 @@
+{
+  "meta": {
+    "name": "BEXO — Attention Market",
+    "description": "Brutalist leaderboard meets editorial talent catalog. Stark ranks, dense data, warm paper, electric lime only for money.",
+    "version": "1.0.0",
+    "created": "2026-08-27",
+    "personality": "Pozy.ai brutalist rank + Outbids.lol data density + editorial proof. Reading this as: talent marketplace for founders/recruiters scanning fast, with a brutalist-data language, leaning toward Tailwind v4 + Geist + Zinc neutrals + single lime accent. DESIGN_VARIANCE 6, MOTION 4, DENSITY 8 — anti-slop per design-taste-frontend.",
+    "references": ["https://pozy.ai/", "https://outbids.lol/", "https://open-design.ai/"]
+  },
+  "colors": {
+    "ink": { "value": "#111318", "usage": "Primary text, nav, strong surfaces — not pure black" },
+    "warm": { "value": "#F7F7F2", "usage": "Page background — warm paper, not beige craft" },
+    "surface": { "value": "#FFFFFF", "usage": "Card bg on warm" },
+    "surface-elevated": { "value": "#FFFFFF", "usage": "Modal/dropdown — no glass by default" },
+    "border": { "value": "#E7E5E4", "usage": "Hairline dividers — stone-200, not gray-200" },
+    "border-strong": { "value": "#D6D3D1", "usage": "Input borders" },
+    "lime": { "value": "#C8FF3D", "usage": "PRIMARY ACCENT — Boost CTA, Featured pill, rank #1 highlight ONLY. Never for qual scores." },
+    "lime-hover": { "value": "#B8F02A", "usage": "Hover for lime primary" },
+    "lime-ink-text": { "value": "#111318", "usage": "Text on lime — 15:1 contrast" },
+    "violet": { "value": "#7C5CFC", "usage": "Secondary — links, selected filter, focus ring" },
+    "violet-hover": { "value": "#6B4FE0", "usage": "Hover violet" },
+    "muted": { "value": "#667085", "usage": "Secondary text, labels" },
+    "muted-strong": { "value": "#475467", "usage": "Tertiary headings" },
+    "zinc-950": { "value": "#09090B", "usage": "Off-black for dark mode, never pure black" },
+    "success": { "value": "#21C77A", "usage": "Availability, verified" },
+    "warning": { "value": "#FFB020", "usage": "Caution" },
+    "error": { "value": "#FF4D5E", "usage": "Errors, reports" }
+  },
+  "typography": {
+    "font-display": { "family": "Geist", "fallback": "system-ui, sans-serif", "source": "https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" },
+    "font-body": { "family": "Geist", "fallback": "system-ui, sans-serif", "source": "https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&display=swap" },
+    "font-mono": { "family": "Geist Mono", "fallback": "JetBrains Mono, monospace", "source": "https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500&display=swap" },
+    "scale": {
+      "xs": { "size": "0.6875rem", "lineHeight": "1rem", "usage": "Eyebrow, badges — mono, tracking 0.14em" },
+      "sm": { "size": "0.8125rem", "lineHeight": "1.25rem", "usage": "Labels, captions, input" },
+      "base": { "size": "0.9375rem", "lineHeight": "1.5rem", "usage": "Body" },
+      "lg": { "size": "1.0625rem", "lineHeight": "1.6rem", "usage": "Card title, lead" },
+      "xl": { "size": "1.25rem", "lineHeight": "1.4rem", "usage": "Section header" },
+      "2xl": { "size": "1.5rem", "lineHeight": "1.25rem", "usage": "Page header" },
+      "3xl": { "size": "1.875rem", "lineHeight": "1.1rem", "usage": "Hero — max 2 lines per taste 4.7" },
+      "4xl": { "size": "2.25rem", "lineHeight": "1.05rem", "usage": "Display — 3-5 words only" }
+    },
+    "weights": { "normal": 400, "medium": 500, "semibold": 600, "bold": 700 }
+  },
+  "spacing": {
+    "base-unit": "4px",
+    "scale": { "0": "0", "1": "0.25rem", "2": "0.5rem", "3": "0.75rem", "4": "1rem", "5": "1.25rem", "6": "1.5rem", "8": "2rem", "10": "2.5rem", "12": "3rem", "16": "4rem", "20": "5rem", "24": "6rem" }
+  },
+  "borders": {
+    "radius": { "none": "0", "sm": "6px", "md": "10px", "lg": "14px", "xl": "18px", "full": "9999px" },
+    "width": { "default": "1px", "thick": "1.5px" }
+  },
+  "shadows": {
+    "sm": { "value": "0 1px 2px rgba(17,19,24,0.06)", "usage": "Inputs" },
+    "md": { "value": "0 4px 12px rgba(17,19,24,0.08)", "usage": "Cards — tinted to ink, not pure black" },
+    "lg": { "value": "0 12px 32px rgba(17,19,24,0.12)", "usage": "Modals" },
+    "glow": { "value": null, "usage": "No neon glows — Lila rule" }
+  },
+  "effects": {
+    "backdrop-blur": null,
+    "glass-opacity": null,
+    "transition-default": "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
+    "transition-slow": "all 0.4s cubic-bezier(0.16, 1, 0.3, 1)"
+  },
+  "components": {
+    "button": {
+      "primary": { "bg": "lime", "text": "lime-ink-text", "radius": "md", "padding": "3 6", "usage": "Boost, Create Profile — lime on ink, 4.5:1" },
+      "secondary": { "bg": "surface", "text": "ink", "radius": "md", "border": "border-strong", "usage": "Explore Talent, Cancel" },
+      "ghost": { "bg": "transparent", "text": "muted", "radius": "md", "usage": "Nav" }
+    },
+    "card": { "bg": "surface", "radius": "lg", "shadow": "sm", "padding": "6", "border": "border" },
+    "badge-featured": { "bg": "lime", "text": "lime-ink-text", "radius": "full", "padding": "1 2.5", "font": "mono xs", "usage": "Featured pill — only on paid rows" },
+    "input": { "bg": "surface", "border": "border-strong", "radius": "md", "text": "ink", "placeholder": "muted", "focus-ring": "violet" },
+    "board-row": { "bg": "surface", "border": "border", "hover": "warm", "radius": "md", "usage": "Leaderboard row — number (mono) + avatar + headline + Featured + $ + clicks" }
+  }
+}

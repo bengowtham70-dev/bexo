@@ -1,0 +1,15 @@
+https://github.com/VoltAgent/awesome-agent-skills.git
+https://github.com/anthropics/skills.git
+https://github.com/travisvn/awesome-claude-skills.git
+https://github.com/alirezarezvani/claude-skills.git
+https://github.com/ComposioHQ/awesome-claude-skills.git
+https://github.com/FrancoStino/opencode-skills-collection.git
+https://github.com/helderberto/agent-skills.git
+https://github.com/conorbronsdon/agent-skills.git
+https://github.com/numman-ali/openskills.git
+https://github.com/open-hax/opencode-skills.git
+https://github.com/mgaruccio/opencode-skills.git
+https://github.com/kedbin/opencode-skills.git
+https://github.com/juliendf/opencode-registry.git
+https://github.com/RobertBirek/opencode-skills-registry.git
+https://github.com/Glurby/bckp_skillz.git
