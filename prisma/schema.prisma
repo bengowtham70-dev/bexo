@@ -8,7 +8,9 @@ enum BoostStatus { DRAFT ACTIVE EXPIRED CANCELLED }
 enum PaymentStatus { PENDING SUCCEEDED FAILED REFUNDED }
 enum Currency { USD INR EUR }
 
-model User { id String @id @default(cuid()); email String @unique; role Role @default(CANDIDATE); createdAt DateTime @default(now()); updatedAt DateTime @updatedAt; candidateProfile CandidateProfile?; employerProfile EmployerProfile?; payments Payment[] }
+model User { id String @id @default(cuid()); email String @unique; password String?; name String?; image String?; emailVerified DateTime?; tokenVersion Int @default(0); role Role @default(CANDIDATE); createdAt DateTime @default(now()); updatedAt DateTime @updatedAt; candidateProfile CandidateProfile?; employerProfile EmployerProfile?; payments Payment[]; auditLogs AuditLog[] }
+
+model AuditLog { id String @id @default(cuid()); userId String?; action String; meta Json?; createdAt DateTime @default(now()); user User? @relation(fields: [userId], references: [id], onDelete: SetNull); @@index([userId, action]); @@index([createdAt]) }
 
 model CandidateProfile { id String @id @default(cuid()); userId String @unique; slug String @unique; headline String?; location String?; bio String?; visibility Visibility @default(PUBLIC); hideFromSearch Boolean @default(false); hideEmail Boolean @default(true); hidePhone Boolean @default(true); createdAt DateTime @default(now()); updatedAt DateTime @updatedAt; user User @relation(fields: [userId], references: [id], onDelete: Cascade); experiences Experience[]; projects Project[]; skills CandidateSkill[]; educations Education[]; links ExternalLink[]; resumes Resume[]; boosts Boost[] }
 
