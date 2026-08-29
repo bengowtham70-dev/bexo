@@ -54,10 +54,85 @@ export default function BoostDashboardPage() {
     };
   }, [customBid, selectedCategory]);
 
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    document.body.appendChild(script);
+    return () => {
+      try {
+        document.body.removeChild(script);
+      } catch (e) {}
+    };
+  }, []);
+
   async function handleCheckout() {
     setLoading(true);
     setError(null);
     try {
+      // 1. Try Razorpay Order Creation
+      const rzRes = await fetch("/api/me/boost/razorpay/create-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          categoryId: selectedCategory,
+          currency: "USD",
+          amountUsd: Number(customBid),
+        }),
+      });
+
+      if (rzRes.ok) {
+        const orderData = await rzRes.json();
+        if (orderData.orderId && (window as any).Razorpay) {
+          const options = {
+            key: orderData.keyId,
+            amount: orderData.amount,
+            currency: orderData.currency,
+            name: "BEXO Spotlight",
+            description: `24h #${rankEstimate.estimatedRank} Spotlight Placement (${selectedCategory.toUpperCase()})`,
+            order_id: orderData.orderId,
+            handler: async function (response: any) {
+              setLoading(true);
+              const verifyRes = await fetch("/api/me/boost/razorpay/verify", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  razorpay_order_id: response.razorpay_order_id,
+                  razorpay_payment_id: response.razorpay_payment_id,
+                  razorpay_signature: response.razorpay_signature,
+                  candidateProfileId: orderData.candidateProfileId,
+                  categoryId: orderData.categoryId,
+                  amountUsd: orderData.amountUsd,
+                }),
+              });
+              const verifyData = await verifyRes.json();
+              if (verifyRes.ok && verifyData.success) {
+                window.location.href = `/talent/${selectedCategory}?boosted=true`;
+              } else {
+                setError(verifyData.error || "Payment verification failed");
+                setLoading(false);
+              }
+            },
+            prefill: {
+              name: orderData.userName,
+              email: orderData.userEmail,
+            },
+            theme: {
+              color: "#C8FF3D",
+            },
+          };
+          const rzp = new (window as any).Razorpay(options);
+          rzp.on("payment.failed", function (response: any) {
+            setError(response.error?.description || "Payment failed");
+            setLoading(false);
+          });
+          rzp.open();
+          setLoading(false);
+          return;
+        }
+      }
+
+      // 2. Fallback to Stripe Checkout Session
       const res = await fetch("/api/me/boost/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
