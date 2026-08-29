@@ -1,7 +1,7 @@
-﻿{
+{
   "compilerOptions": {
     "target": "ES2017",
-    "lib": ["dom","dom.iterable","es6"],
+    "lib": ["dom", "dom.iterable", "es6"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -16,6 +16,20 @@
     "plugins": [{ "name": "next" }],
     "paths": { "@/*": ["./src/*"] }
   },
-  "include": ["next-env.d.ts","**/*.ts","**/*.tsx",".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": [
+    "next-env.d.ts",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "tests/**/*.ts",
+    "tests/**/*.tsx",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "internet-skills",
+    "skills",
+    "skills-bexo-critical",
+    "opencode-skills-collection",
+    "docs"
+  ]
 }

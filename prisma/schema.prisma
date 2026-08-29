@@ -1,33 +1,287 @@
-﻿generator client { provider = "prisma-client-js" }
-datasource db { provider = "postgresql"; url = env("DATABASE_URL") }
+generator client {
+  provider = "prisma-client-js"
+}
 
-enum Role { CANDIDATE EMPLOYER ADMIN MODERATOR }
-enum Visibility { PUBLIC PRIVATE HIDDEN }
-enum VerificationStatus { PENDING VERIFIED REJECTED }
-enum BoostStatus { DRAFT ACTIVE EXPIRED CANCELLED }
-enum PaymentStatus { PENDING SUCCEEDED FAILED REFUNDED }
-enum Currency { USD INR EUR }
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
 
-model User { id String @id @default(cuid()); email String @unique; password String?; name String?; image String?; emailVerified DateTime?; tokenVersion Int @default(0); role Role @default(CANDIDATE); createdAt DateTime @default(now()); updatedAt DateTime @updatedAt; candidateProfile CandidateProfile?; employerProfile EmployerProfile?; payments Payment[]; auditLogs AuditLog[] }
+enum Role {
+  CANDIDATE
+  EMPLOYER
+  ADMIN
+  MODERATOR
+}
 
-model AuditLog { id String @id @default(cuid()); userId String?; action String; meta Json?; createdAt DateTime @default(now()); user User? @relation(fields: [userId], references: [id], onDelete: SetNull); @@index([userId, action]); @@index([createdAt]) }
+enum Visibility {
+  PUBLIC
+  PRIVATE
+  HIDDEN
+}
 
-model CandidateProfile { id String @id @default(cuid()); userId String @unique; slug String @unique; headline String?; location String?; bio String?; visibility Visibility @default(PUBLIC); hideFromSearch Boolean @default(false); hideEmail Boolean @default(true); hidePhone Boolean @default(true); createdAt DateTime @default(now()); updatedAt DateTime @updatedAt; user User @relation(fields: [userId], references: [id], onDelete: Cascade); experiences Experience[]; projects Project[]; skills CandidateSkill[]; educations Education[]; links ExternalLink[]; resumes Resume[]; boosts Boost[] }
+enum VerificationStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+}
 
-model Experience { id String @id @default(cuid()); candidateProfileId String; company String; title String; startDate DateTime; endDate DateTime?; description String?; createdAt DateTime @default(now()); candidateProfile CandidateProfile @relation(fields: [candidateProfileId], references: [id], onDelete: Cascade); @@index([candidateProfileId]) }
+enum BoostStatus {
+  DRAFT
+  ACTIVE
+  EXPIRED
+  CANCELLED
+}
 
-model Project { id String @id @default(cuid()); candidateProfileId String; name String; description String?; stack String?; liveUrl String?; githubUrl String?; createdAt DateTime @default(now()); candidateProfile CandidateProfile @relation(fields: [candidateProfileId], references: [id], onDelete: Cascade); @@index([candidateProfileId]) }
+enum PaymentStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+  REFUNDED
+}
 
-model CandidateSkill { id String @id @default(cuid()); candidateProfileId String; name String; evidenceRefs String?; createdAt DateTime @default(now()); candidateProfile CandidateProfile @relation(fields: [candidateProfileId], references: [id], onDelete: Cascade); @@index([candidateProfileId]) }
+enum Currency {
+  USD
+  INR
+  EUR
+}
 
-model Education { id String @id @default(cuid()); candidateProfileId String; institution String; degree String?; field String?; startDate DateTime?; endDate DateTime?; createdAt DateTime @default(now()); candidateProfile CandidateProfile @relation(fields: [candidateProfileId], references: [id], onDelete: Cascade); @@index([candidateProfileId]) }
+enum ReportStatus {
+  PENDING
+  RESOLVED
+  DISMISSED
+}
 
-model ExternalLink { id String @id @default(cuid()); candidateProfileId String; type String; url String; displayName String?; createdAt DateTime @default(now()); candidateProfile CandidateProfile @relation(fields: [candidateProfileId], references: [id], onDelete: Cascade); @@index([candidateProfileId]) }
+model User {
+  id               String            @id @default(cuid())
+  email            String            @unique
+  password         String?
+  name             String?
+  image            String?
+  emailVerified    DateTime?
+  tokenVersion     Int               @default(0)
+  role             Role              @default(CANDIDATE)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  candidateProfile CandidateProfile?
+  employerProfile  EmployerProfile?
+  payments         Payment[]
+  auditLogs        AuditLog[]
+  reportsSubmitted Report[]          @relation("UserReportsSubmitted")
+}
 
-model Resume { id String @id @default(cuid()); candidateProfileId String; storageKey String; originalName String; parsedVersion Int @default(1); visibility String @default("PRIVATE"); createdAt DateTime @default(now()); candidateProfile CandidateProfile @relation(fields: [candidateProfileId], references: [id], onDelete: Cascade); @@index([candidateProfileId]) }
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String
+  meta      Json?
+  createdAt DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
 
-model EmployerProfile { id String @id @default(cuid()); userId String @unique; company String; website String?; verificationStatus VerificationStatus @default(PENDING); createdAt DateTime @default(now()); user User @relation(fields: [userId], references: [id], onDelete: Cascade) }
+  @@index([userId, action])
+  @@index([createdAt])
+}
 
-model Boost { id String @id @default(cuid()); candidateId String; categoryId String; amount Int; currency Currency @default(USD); startAt DateTime; endAt DateTime; status BoostStatus @default(DRAFT); providerPaymentId String? @unique; createdAt DateTime @default(now()); candidateProfile CandidateProfile @relation(fields: [candidateId], references: [id], onDelete: Cascade); @@index([candidateId, status]) }
+model CandidateProfile {
+  id             String           @id @default(cuid())
+  userId         String           @unique
+  slug           String           @unique
+  headline       String?
+  location       String?
+  bio            String?
+  visibility     Visibility       @default(PUBLIC)
+  hideFromSearch Boolean          @default(false)
+  hideEmail      Boolean          @default(true)
+  hidePhone      Boolean          @default(true)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  experiences    Experience[]
+  projects       Project[]
+  skills         CandidateSkill[]
+  educations     Education[]
+  links          ExternalLink[]
+  resumes        Resume[]
+  boosts         Boost[]
+}
 
-model Payment { id String @id @default(cuid()); userId String; provider String; providerPaymentId String @unique; amount Int; currency Currency @default(USD); status PaymentStatus @default(PENDING); createdAt DateTime @default(now()); user User @relation(fields: [userId], references: [id], onDelete: Cascade); @@index([userId]) }
+model Experience {
+  id                 String           @id @default(cuid())
+  candidateProfileId String
+  company            String
+  title              String
+  startDate          DateTime
+  endDate            DateTime?
+  description        String?
+  createdAt          DateTime         @default(now())
+  candidateProfile   CandidateProfile @relation(fields: [candidateProfileId], references: [id], onDelete: Cascade)
+
+  @@index([candidateProfileId])
+}
+
+model Project {
+  id                 String           @id @default(cuid())
+  candidateProfileId String
+  name               String
+  description        String?
+  stack              String?
+  liveUrl            String?
+  githubUrl          String?
+  createdAt          DateTime         @default(now())
+  candidateProfile   CandidateProfile @relation(fields: [candidateProfileId], references: [id], onDelete: Cascade)
+
+  @@index([candidateProfileId])
+}
+
+model CandidateSkill {
+  id                 String           @id @default(cuid())
+  candidateProfileId String
+  name               String
+  evidenceRefs       String?
+  createdAt          DateTime         @default(now())
+  candidateProfile   CandidateProfile @relation(fields: [candidateProfileId], references: [id], onDelete: Cascade)
+
+  @@index([candidateProfileId])
+}
+
+model Education {
+  id                 String           @id @default(cuid())
+  candidateProfileId String
+  institution        String
+  degree             String?
+  field              String?
+  startDate          DateTime?
+  endDate            DateTime?
+  createdAt          DateTime         @default(now())
+  candidateProfile   CandidateProfile @relation(fields: [candidateProfileId], references: [id], onDelete: Cascade)
+
+  @@index([candidateProfileId])
+}
+
+model ExternalLink {
+  id                 String           @id @default(cuid())
+  candidateProfileId String
+  type               String
+  url                String
+  displayName        String?
+  createdAt          DateTime         @default(now())
+  candidateProfile   CandidateProfile @relation(fields: [candidateProfileId], references: [id], onDelete: Cascade)
+
+  @@index([candidateProfileId])
+}
+
+model Resume {
+  id                 String           @id @default(cuid())
+  candidateProfileId String
+  storageKey         String
+  originalName       String
+  parsedVersion      Int              @default(1)
+  visibility         String           @default("PRIVATE")
+  createdAt          DateTime         @default(now())
+  candidateProfile   CandidateProfile @relation(fields: [candidateProfileId], references: [id], onDelete: Cascade)
+
+  @@index([candidateProfileId])
+}
+
+model EmployerProfile {
+  id                 String                     @id @default(cuid())
+  userId             String                     @unique
+  company            String
+  website            String?
+  workEmail          String?
+  role               String?
+  linkedinUrl        String?
+  companyProfile     String?
+  verificationStatus VerificationStatus         @default(PENDING)
+  emailVerified      Boolean                    @default(false)
+  domainVerified     Boolean                    @default(false)
+  createdAt          DateTime                   @default(now())
+  updatedAt          DateTime                   @updatedAt
+  user               User                       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  saved              EmployerSaved[]
+  savedLists         EmployerSavedList[]
+  verificationTokens EmployerVerificationToken[]
+}
+
+model EmployerVerificationToken {
+  id              String           @id @default(cuid())
+  userId          String
+  tokenHash       String           @unique
+  expiresAt       DateTime
+  usedAt          DateTime?
+  createdAt       DateTime         @default(now())
+  employerProfile EmployerProfile? @relation(fields: [userId], references: [userId])
+
+  @@index([userId])
+}
+
+model EmployerSaved {
+  id              String          @id @default(cuid())
+  employerId      String
+  candidateId     String
+  notesPrivate    String?
+  createdAt       DateTime        @default(now())
+  employerProfile EmployerProfile @relation(fields: [employerId], references: [id], onDelete: Cascade)
+
+  @@unique([employerId, candidateId])
+  @@index([employerId])
+}
+
+model EmployerSavedList {
+  id              String          @id @default(cuid())
+  employerId      String
+  name            String
+  createdAt       DateTime        @default(now())
+  employerProfile EmployerProfile @relation(fields: [employerId], references: [id], onDelete: Cascade)
+
+  @@index([employerId])
+}
+
+model Boost {
+  id                String           @id @default(cuid())
+  candidateId       String
+  categoryId        String
+  amount            Int
+  currency          Currency         @default(USD)
+  startAt           DateTime
+  endAt             DateTime
+  status            BoostStatus      @default(DRAFT)
+  providerPaymentId String?          @unique
+  createdAt         DateTime         @default(now())
+  candidateProfile  CandidateProfile @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+
+  @@index([candidateId, status])
+}
+
+model Payment {
+  id                String        @id @default(cuid())
+  userId            String
+  provider          String
+  providerPaymentId String        @unique
+  amount            Int
+  currency          Currency      @default(USD)
+  status            PaymentStatus @default(PENDING)
+  createdAt         DateTime      @default(now())
+  user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Report {
+  id              String       @id @default(cuid())
+  reporterId      String
+  targetType      String
+  targetId        String
+  reason          String
+  details         String?
+  status          ReportStatus @default(PENDING)
+  resolutionNotes String?
+  resolvedAt      DateTime?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  reporter        User         @relation("UserReportsSubmitted", fields: [reporterId], references: [id], onDelete: Cascade)
+
+  @@index([status])
+  @@index([targetType, targetId])
+  @@index([reporterId])
+}

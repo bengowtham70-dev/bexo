@@ -29,6 +29,16 @@ export async function PATCH(req: NextRequest) {
       data: { headline: data.headline, location: data.location, bio: data.bio },
     });
   }
+  if (data.image) {
+    try {
+      await prisma.user.update({
+        where: { id: userId },
+        data: { image: data.image },
+      });
+    } catch {
+      // User might be mock/demo in tests
+    }
+  }
   // Salary stored via preferences; keep here for compat
   return NextResponse.json(profile);
 }

@@ -1,36 +1,21 @@
-let z: unknown;
-try {
-  z = require("zod").z;
-} catch {
-  const mockString = () => ({ email: () => mockString(), min: () => mockString(), regex: () => mockString() });
-  z = {
-    string: mockString,
-    literal: () => ({}),
-    enum: () => ({ optional: () => ({ default: () => ({}) }) }),
-    object: () => ({
-      safeParse: (data: { age18: boolean }) => ({ success: data.age18 === true, error: { issues: [{ message: "Must be 18+ to use BEXO" }] } }),
-      parse: (d: unknown) => d,
-    }),
-  } as unknown;
-}
+import { z } from "zod";
 
-const zod = z as {
-  string: () => { email: () => unknown; min: (n: number) => { regex: () => unknown } };
-  literal: (v: true, o?: unknown) => unknown;
-  enum: (v: string[]) => { optional: () => { default: (d: string) => unknown } };
-  object: (o: unknown) => { safeParse: (d: unknown) => { success: boolean; error: { issues: { message: string }[] } }; parse: (d: unknown) => unknown };
-};
-
-export const signupSchema = zod.object({
-  email: zod.string().email(),
-  password: zod.string().min(8).regex(/[A-Z]/ as never, "needs uppercase"),
-  age18: zod.literal(true, { errorMap: () => ({ message: "Must be 18+ to use BEXO" }) }),
-  role: zod.enum(["CANDIDATE", "EMPLOYER"]).optional().default("CANDIDATE"),
+export const signupSchema = z.object({
+  email: z.string().email(),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .regex(/[A-Z]/, "Password must contain at least one uppercase letter"),
+  age18: z.literal(true, {
+    errorMap: () => ({ message: "Must be 18+ to use BEXO" }),
+  }),
+  role: z.enum(["CANDIDATE", "EMPLOYER"]).optional().default("CANDIDATE"),
 });
 
-export const loginSchema = zod.object({
-  email: zod.string().email(),
-  password: zod.string().min(1),
+export const loginSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(1, "Password is required"),
 });
 
-export type SignupInput = { email: string; password: string; age18: true; role?: "CANDIDATE" | "EMPLOYER" };
+export type SignupInput = z.infer<typeof signupSchema>;
+export type LoginInput = z.infer<typeof loginSchema>;

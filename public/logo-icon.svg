@@ -1,0 +1,15 @@
+<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="BEXO Icon">
+  <!-- Outer Rounded Badge -->
+  <rect width="40" height="40" rx="10" fill="#0D0F12"/>
+  <rect x="0.5" y="0.5" width="39" height="39" rx="9.5" stroke="#262B33" stroke-width="1"/>
+  
+  <!-- 'B' Facets -->
+  <path d="M11 9C11 7.9 11.9 7 13 7H21C25.42 7 29 10.58 29 15C29 17.5 27.85 19.74 26.05 21.2C28.4 22.7 30 25.4 30 28.5C30 32.92 26.42 36.5 22 36.5H13C11.9 36.5 11 35.6 11 34.5V9Z" fill="#181B20"/>
+  
+  <path d="M15 11.5H21C22.93 11.5 24.5 13.07 24.5 15C24.5 16.93 22.93 18.5 21 18.5H15V11.5Z" fill="#F4F4F0"/>
+  <path d="M15 21.5H22C24.21 21.5 26 23.29 26 25.5C26 27.71 24.21 29.5 22 29.5H15V21.5Z" fill="#F4F4F0"/>
+  
+  <!-- Signature Lime Beacon Node -->
+  <circle cx="29.5" cy="10.5" r="4.5" fill="#C8FF3D" stroke="#0D0F12" stroke-width="2"/>
+  <circle cx="29.5" cy="10.5" r="2" fill="#0D0F12"/>
+</svg>

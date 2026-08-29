@@ -35,3 +35,7 @@ export const can = (user: { role: Role }, perm: string) => {
   const resource = parts.join(":") || parts[0];
   return hasPermission(user.role, resource, action);
 };
+
+export function requireRole(allowedRoles: Role[] | string[]) {
+  return (role: string | Role) => (allowedRoles as string[]).includes(role);
+}

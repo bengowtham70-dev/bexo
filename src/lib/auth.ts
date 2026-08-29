@@ -12,16 +12,21 @@ try {
   };
 }
 
-let PrismaAdapter: unknown;
+export function hashPassword(password: string): string {
+  return bcrypt.hashSync(password, 10);
+}
+
+export function comparePassword(password: string, hash: string): boolean {
+  return bcrypt.compareSync(password, hash);
+}
+
+export const verifyPassword = comparePassword;
+
 let Credentials: unknown;
 let GoogleProvider: unknown;
 let GithubProvider: unknown;
 let prismaInstance: { user: { findUnique: (a: unknown) => Promise<null> } };
-try {
-  PrismaAdapter = require("@auth/prisma-adapter").PrismaAdapter;
-} catch {
-  PrismaAdapter = () => ({});
-}
+
 try {
   Credentials = require("next-auth/providers/credentials").default;
 } catch {
@@ -43,65 +48,64 @@ try {
   prismaInstance = { user: { findUnique: async () => null } } as unknown as typeof prismaInstance;
 }
 
-import { loginSchema } from "./validators/auth";
-
-export const hashPassword = (p: string) => bcrypt.hashSync(p, 10);
-export const verifyPassword = (p: string, h: string) => bcrypt.compareSync(p, h);
-
-const prisma = prismaInstance as unknown as import("@prisma/client").PrismaClient;
-
-const googleProvider = (() => {
-  try {
-    return (GoogleProvider as (o: unknown) => unknown)({
-      clientId: process.env.GOOGLE_CLIENT_ID ?? "",
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
-    });
-  } catch {
-    return { id: "google", name: "Google" };
-  }
-})();
-
-const githubProvider = (() => {
-  try {
-    return (GithubProvider as (o: unknown) => unknown)({
-      clientId: process.env.GITHUB_ID ?? "",
-      clientSecret: process.env.GITHUB_SECRET ?? "",
-    });
-  } catch {
-    return { id: "github", name: "GitHub" };
-  }
-})();
-
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter ? (PrismaAdapter as (p: unknown) => unknown)(prisma) as unknown as NextAuthOptions["adapter"] : undefined,
-  session: { strategy: "jwt", maxAge: 60 * 60 * 24 * 7 },
   providers: [
-    (Credentials as (o: unknown) => unknown)({
+    (Credentials as any)({
       name: "credentials",
-      credentials: { email: {}, password: {} },
-      async authorize(creds: unknown) {
-        const { email, password } = loginSchema.parse(creds);
-        const u = await prisma.user.findUnique({ where: { email } } as never) as unknown as { id: string; email: string; role: string; password: string } | null;
-        if (!u?.password) throw new Error("Invalid credentials");
-        if (!verifyPassword(password, u.password)) throw new Error("Invalid credentials");
-        return { id: u.id, email: u.email, role: u.role } as unknown as { id: string; email: string; role: string };
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
       },
-    }) as never,
-    googleProvider as never,
-    githubProvider as never,
-  ].filter(Boolean),
+      async authorize(credentials: Record<string, string> | undefined) {
+        if (!credentials?.email || !credentials?.password) return null;
+        try {
+          const user = await (prismaInstance.user as any).findUnique({
+            where: { email: credentials.email },
+          });
+          if (!user || !user.password) return null;
+          const isValid = comparePassword(credentials.password, user.password);
+          if (!isValid) return null;
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role,
+            tokenVersion: user.tokenVersion,
+          };
+        } catch {
+          return null;
+        }
+      },
+    }),
+    (GoogleProvider as any)({
+      clientId: process.env.GOOGLE_CLIENT_ID || "mock-google-id",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "mock-google-secret",
+    }),
+    (GithubProvider as any)({
+      clientId: process.env.GITHUB_ID || process.env.GITHUB_CLIENT_ID || "mock-github-id",
+      clientSecret: process.env.GITHUB_SECRET || process.env.GITHUB_CLIENT_SECRET || "mock-github-secret",
+    }),
+  ],
+  session: { strategy: "jwt" },
   callbacks: {
     async jwt({ token, user }) {
-      if (user) (token as Record<string, unknown>).role = (user as unknown as Record<string, unknown>).role;
+      if (user) {
+        token.id = user.id;
+        token.role = (user as any).role || "CANDIDATE";
+        token.tokenVersion = (user as any).tokenVersion || 0;
+      }
       return token;
     },
     async session({ session, token }) {
-      (session as unknown as Record<string, unknown> & { user: Record<string, unknown> }).user.role = (
-        token as Record<string, unknown>
-      ).role;
-      (session as unknown as Record<string, unknown> & { user: Record<string, unknown> }).user.id =
-        token.sub as string;
+      if (session.user && token) {
+        (session.user as any).id = token.id as string;
+        (session.user as any).role = token.role as string;
+        (session.user as any).tokenVersion = token.tokenVersion as number;
+      }
       return session;
     },
+  },
+  pages: {
+    signIn: "/login",
   },
 };
