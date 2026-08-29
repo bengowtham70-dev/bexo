@@ -22,9 +22,10 @@ describe("Phase 08 - Boost Expiry & Candidate Boost List", () => {
     expect(code).toContain("prisma.boost.findMany");
   });
 
-  test("talent route orders featured shelf by startAt ASC", () => {
+  test("talent route orders featured shelf strictly by amount DESC and startAt ASC", () => {
     const code = readFileSync("src/app/api/talent/route.ts", "utf8");
     expect(code).toContain('status: "ACTIVE"');
-    expect(code).toContain('orderBy: { startAt: "asc" }');
+    expect(code).toContain('amount: "desc"');
+    expect(code).toContain('startAt: "asc"');
   });
 });

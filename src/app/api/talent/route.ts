@@ -100,14 +100,14 @@ export async function GET(req: NextRequest) {
   try {
     const where = buildQuery({ q, skills, location, remote });
 
-    // Featured shelf: Boost ACTIVE in category, ordered by startAt ASC
+    // Featured shelf: Boost ACTIVE in category, strictly ordered by bid amount DESC (highest bid = #1 spot)
     const featuredBoosts = await prisma.boost.findMany({
       where: {
         status: "ACTIVE",
         endAt: { gt: new Date() },
         ...(category ? { categoryId: category.toLowerCase() } : {}),
       },
-      orderBy: { startAt: "asc" },
+      orderBy: [{ amount: "desc" }, { startAt: "asc" }],
       include: {
         candidateProfile: {
           include: {
@@ -122,10 +122,12 @@ export async function GET(req: NextRequest) {
 
     const featured = featuredBoosts
       .filter((b) => b.candidateProfile && b.candidateProfile.visibility === "PUBLIC" && !b.candidateProfile.hideFromSearch)
-      .map((b) => ({
+      .map((b, index) => ({
         ...filterPublicProfile(b.candidateProfile),
         isFeatured: true,
         boostCategory: b.categoryId,
+        boostAmount: b.amount, // amount in cents
+        boostRank: index + 1,  // #1 for highest payer, #2 for second, etc.
       }));
 
     const featuredIds = featured.map((f: any) => f.id);

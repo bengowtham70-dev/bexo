@@ -22,9 +22,10 @@ pnpm-debug.log*
 .pnpm-*.log
 prisma-out.log
 
-# Environment variables
+# Environment variables & Credentials
 .env
 .env*.local
+.credentials/
 
 # System & IDE
 .DS_Store

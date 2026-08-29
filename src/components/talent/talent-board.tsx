@@ -128,6 +128,8 @@ export function TalentBoard({ initialCategory = "", initialQuery = "" }: TalentB
                 skills={p.skills}
                 avatarUrl={p.user?.image}
                 featured={true}
+                boostAmount={p.boostAmount || p.paidAmount}
+                boostRank={p.boostRank || idx + 1}
               />
             ))}
           </div>

@@ -9,6 +9,8 @@ export type BoardRowProps = {
   skills?: { name: string }[];
   featured?: boolean;
   avatarUrl?: string;
+  boostAmount?: number;
+  boostRank?: number;
 };
 
 export function BoardRow({
@@ -20,6 +22,8 @@ export function BoardRow({
   skills = [],
   featured,
   avatarUrl,
+  boostAmount,
+  boostRank,
 }: BoardRowProps) {
   const profileHref = slug ? `/p/${slug}` : "#";
 
@@ -91,7 +95,10 @@ export function BoardRow({
         {featured && (
           <span className="badge-featured inline-flex items-center gap-2 text-xs uppercase font-black tracking-wider px-3.5 py-1.5 rounded-full bg-[var(--color-lime)] text-[var(--color-ink)] shadow-xs">
             <span className="w-2.5 h-2.5 rounded-full bg-[var(--color-lime-ink)] animate-pulse" />
-            $29 Spotlight
+            {boostRank ? `#${boostRank} ` : ""}
+            {boostAmount
+              ? `$${boostAmount >= 100 ? Math.round(boostAmount / 100) : boostAmount} Spotlight`
+              : "Spotlight"}
           </span>
         )}
         <span className="text-[11px] font-medium px-2.5 py-1 rounded-md border border-[var(--color-border)] group-hover:border-[var(--color-ink)] group-hover:bg-[var(--color-ink)] group-hover:text-[var(--color-bg)] transition-colors">

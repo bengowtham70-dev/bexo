@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { TrendingUp, Sparkles, SlidersHorizontal, CheckCircle2 } from "lucide-react";
 import { DEMO_PROFILES } from "@/lib/constants/demo-profiles";
 
-const PRESET_BIDS = [1, 5, 15, 25, 50, 100, 250, 450];
+const PRESET_BIDS = [1, 5, 15, 25, 50, 100, 250, 500, 600, 1000];
 
 export default function BoostDashboardPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>("ai");
@@ -148,7 +148,7 @@ export default function BoostDashboardPage() {
             <input
               type="range"
               min="1"
-              max="500"
+              max="1000"
               step="1"
               value={customBid}
               onChange={(e) => setCustomBid(Number(e.target.value))}

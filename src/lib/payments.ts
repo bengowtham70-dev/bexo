@@ -63,6 +63,6 @@ export async function createBoostCheckoutSession({
   return {
     url: session.url || "",
     sessionId: session.id,
-    amount: BOOST_PRICE_CENTS,
+    amount: unitAmount,
   };
 }
