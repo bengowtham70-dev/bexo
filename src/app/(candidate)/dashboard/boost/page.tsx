@@ -135,10 +135,10 @@ export default function BoostDashboardPage() {
                 <input
                   type="number"
                   min="1"
-                  max="1000"
+                  max="100000"
                   value={customBid}
                   onChange={(e) => setCustomBid(Math.max(1, Number(e.target.value)))}
-                  className="w-20 px-2 py-1 rounded border border-[var(--color-border)] bg-[var(--color-bg)] text-right font-mono text-base font-black focus:outline-none focus:border-[var(--color-ink)]"
+                  className="w-24 px-2 py-1 rounded border border-[var(--color-border)] bg-[var(--color-bg)] text-right font-mono text-base font-black focus:outline-none focus:border-[var(--color-ink)]"
                 />
                 <span className="text-xs font-normal text-[var(--color-muted)]">USD</span>
               </div>

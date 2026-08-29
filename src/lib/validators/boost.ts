@@ -12,7 +12,7 @@ export const AVAILABLE_CATEGORIES = [
 export const boostCheckoutSchema = z.object({
   categoryId: z.string().min(1, "Category is required"),
   currency: z.enum(["USD", "INR", "EUR"]).default("USD"),
-  amountUsd: z.number().min(1, "Minimum bid is $1").max(5000, "Maximum bid is $5000").optional().default(10),
+  amountUsd: z.number().min(1, "Minimum bid is $1").max(100000, "Maximum bid is $100,000").optional().default(10),
 });
 
 export type BoostCheckoutInput = z.infer<typeof boostCheckoutSchema>;
